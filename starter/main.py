@@ -7,21 +7,25 @@ import heapq
 def dijkstra(start, goal, gridded_map):
     # open list is heap
     open_list = []
+    node_count = 0
+
     # closed list is hashmap or dict in python
     closed_list = dict()
     heapq.heappush(open_list, start)
     closed_list[start.state_hash()] = start
     while open_list:
         n = heapq.heappop(open_list)
+        node_count+=1
         if n == goal:
-            return n.get_g(), closed_list
+            return n.get_g(), node_count
         for n_prime in gridded_map.successors(n):
             if n_prime.state_hash() not in closed_list:
                 heapq.heappush(open_list, n_prime)
                 closed_list[n_prime.state_hash()] = n_prime
             if n_prime.state_hash() in closed_list and n_prime.get_g() < closed_list[n_prime.state_hash()].get_g():
                 heapq.heappush(open_list, n_prime)
-    return -1, closed_list
+                closed_list[n_prime.state_hash()] = n_prime
+    return -1, node_count
 
 def bi_bs(start, goal, gridded_map):
     open_forward = []
@@ -29,6 +33,7 @@ def bi_bs(start, goal, gridded_map):
     closed_forward = dict()
     closed_back = dict()
     u = float("inf")
+    node_count = 0
 
     heapq.heappush(open_forward, start)
     heapq.heappush(open_back, goal)
@@ -38,9 +43,10 @@ def bi_bs(start, goal, gridded_map):
     
     while open_forward and open_back:
         if u < open_forward[0].get_g() + open_back[0].get_g():
-            return u, {**closed_forward, **closed_back}
+            return u, node_count
         if open_forward[0].get_g() < open_back[0].get_g():
             n = heapq.heappop(open_forward)
+            node_count+=1
             for n_prime in gridded_map.successors(n):
                 if n_prime.state_hash() in closed_back:
                     u = min(u, n_prime.get_g() + closed_back[n_prime.state_hash()].get_g())
@@ -52,6 +58,7 @@ def bi_bs(start, goal, gridded_map):
                     closed_forward[n_prime.state_hash()] = n_prime
         else:
             n = heapq.heappop(open_back)
+            node_count+=1
             for n_prime in gridded_map.successors(n):
                 if n_prime.state_hash() in closed_forward:
                     u = min(u, n_prime.get_g() + closed_forward[n_prime.state_hash()].get_g())
@@ -61,7 +68,7 @@ def bi_bs(start, goal, gridded_map):
                 if n_prime.state_hash() in closed_back and n_prime.get_g() < closed_back[n_prime.state_hash()].get_g():
                     heapq.heappush(open_back, n_prime)
                     closed_back[n_prime.state_hash()] = n_prime
-    return -1, {**closed_forward, **closed_back}
+    return -1, node_count
 
 def main():
     """
@@ -117,7 +124,6 @@ def main():
             print()
 
         cost, expanded_astar = bi_bs(start, goal, gridded_map) # Implement here the call to your Bi-BS's implementation for start, goal, and gridded_map
-
         nodes_expanded_bibs.append(expanded_astar)
         
         if cost != solution_costs[i]:
@@ -127,7 +133,7 @@ def main():
             print("Solution cost encountered: ", cost)
             print("Solution cost expected: ", solution_costs[i])
             print()
-    
+
     if plots:
         from search.plot_results import PlotResults
         plotter = PlotResults()

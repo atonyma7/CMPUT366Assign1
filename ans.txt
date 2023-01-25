@@ -1,0 +1,37 @@
+1. The general distribution of the plot shows that the Bi-BS algorithm generally performs better than Dijkstra’s algorithm. You can see
+that the difference between the number of nodes searched decreases in favour of Bi-BS as the number of nodes searched increases for Dijkstra. In terms 
+of Big O complexity, this is supposed to be an exponential increase, however the difference is bounded by the state space which is polynomial 
+so we don't see as significant of a increase. 
+
+The x-axis represents Bi-BS nodes expanded, whereas the y-axis represents Dijkstra’s nodes expanded. So in general more nodes are above the main diagonal (where the nodes expanded are the same)
+because Bi-BS is a better algorithm in terms of runtime complexity.
+
+2. When a point is below the main diagonal, it means that Dijkstra’s performed better than the Bi-BS algorithm by expanding less nodes for that search problem. We see this in only
+a minority of cases, in general, the Bi-BS algorithm should perform better in terms of big O notation but it's not always guranteed to be better for every individual case. 
+We can use plot maps to observe why this happens. 
+
+For a lot of the search problems in which Dijkstra’s performed better than the Bi-BS algorithm, it seemed to follow a particular pattern. Where the 
+goal state was blocked off from the start state (so basically when a path couldn't be found). So Dijkstra would expand all the nodes that were accessible 
+from the start state, and end once all the nodes that could be accessed from the start state were expanded, since no solution existed and the open list would
+become empty. However, in Bi-BS, since we expand from both the goal and start states, the algorithm would expand all the same states Dijkstra’s would 
+for that particular search problem, while also expanding states from goal state concurrently, and only stopping once the open list in the forward directions
+was empty (since the stopping condition is that ethier of the closed lists become empty). So in these cases, Dijkstra performed better than Bi-BS since it would stop
+once all the nodes that were accessible from the start state were expanded, whereas Bi-BS would expand all the nodes that were accessible from the start state AND a
+bunch of nodes that the start state could not reach since we also search from the backwards direction using the goal state at the same time as the fowards search, only stopping 
+once the forward search realizes that it cannot find the goal state (the forward closed list becomes empty). So you can see this reflected in the graph when the point is clearly
+below the main diagonal
+
+One thing to note is that the above cases tended to result in around 1600 nodes expanded for Dijkstra, since this seemed to happen when the start state
+was in a particular circle on the map that was divided from the rest of the map (making the rest of the map inaccessible), and there are around 1600 nodes accessible
+from that circle. Whereas in Bi-BS, it would expand those ~1600 nodes while also expanding nodes backwards from the goal, resulting in a number of searched nodes much higher
+than 1600. 
+
+3. When a point is above the main diagonal, it means that the Bi-BS algorithm performed better than Dijkstra’s algorithm for that particular
+search problem (Less nodes expanded). We expect to see this often, as in terms of Big O complexity, the increase in runtime is supposed to be exponential when comparing 
+the two algorithms in favour of Bi-BS. As the search tree is bounded by the number of states in the state space (the width x height of the map), 
+we don't see a exponential improvement, but we can see that there are clearly many situations where the Bi-BS algorithm performed better even if the state space is bounded
+(the points tend to be increasingly above the main diagonal as the number of nodes searched by Dijkstra’s increases, indicating a larger improvement with Bi-BS). 
+
+While observing the plot maps, we can see why Bi-BS tends to perform better in most cases. Dijkstra’s tends to search in a large circle whereas Bi-BS tends to search in 
+2 smaller circles concurrently, ultimately covering less total area than Dijkstra does (meaning less nodes expanded). Which results in Bi-BS expanding less total nodes than Dijkstra does for that
+particular search problem. This results in the point clearly being above the main diagonal in the plot graph.
